@@ -1,0 +1,5 @@
+# MCEdit Unified Filter Making Tutorial
+
+Some knowledge of python would be useful in understanding this tutorial however it is not neccessary. When I started making MCEdit filters I had not programmed before and had no idea what I was doing. My suggestion would be to find some simple filters and understand what they do and slowly learn. Going through a python tutorial is also a good suggestion if you are a complete novice. I have been programming for a number of years and still don't really know what I am doing.
+
+I made this tutorial shortly after starting making filters mostly to remind me of the options that go into them. They were originally stored on mediafire along with the filters but the time has come to move them to github in the hope that they will be more easily viewable and editable if someone wants to help update them.
