@@ -36,6 +36,7 @@ from pymclevel import MCSchematic
 import subprocess
 import binascii
 import shutil
+import directories
 
 displayName = "3D-2-Minecraft"
 
@@ -158,7 +159,7 @@ def perform(level, box, options):
 			raise Exception('No Model File Specified')
 		model = file.split(os.sep)[-1]
 		oripath = os.sep.join(file.split(os.sep)[0:-1])
-		kv6path = os.sep.join(os.getcwd().split(os.sep)[0:-1])+str(os.sep)+'Filters'
+		kv6path = directories.getFiltersDir()
 		
 		#checking all the required files exist and errors if they don't
 		if not os.path.isdir(os.sep.join(kv6path.split(os.sep)[0:-1])):
