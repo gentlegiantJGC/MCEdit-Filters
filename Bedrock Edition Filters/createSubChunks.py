@@ -18,8 +18,9 @@ inputs = (
 	)
 	
 def perform(level, box, options):
-	# terrain tag in the format (version x1, blocks (air) x4096, block data x4096*0.5) 
-	terrain = '\x00'+'\x00'*4096+'\x00'*2048
+	emptyChunks = False
+	if level.gameVersion != 'PE':
+		raise Exception('Must be a PE/Win10... world')
 	# iterating through every chunk in the box
 	for cx, cz in box.chunkPositions:
 		try:
@@ -30,8 +31,13 @@ def perform(level, box, options):
 			# the chunk probably could be generated within MCedit but it wouldn't contain any terrain
 			# and I don't know how the game would deal with it.
 			# It may regerate the chunk since it is empty or might leave it as it is
+			if not emptyChunks:
+				print '========================================'
 			print 'issue loading chunk ('+str(cx)+', '+str(cz)+'). Go near it in game to genearate terrain'
+			emptyChunks = True
 			continue
+		# terrain tag in the format (version x1, blocks (air) x4096, block data x4096*0.5) 
+		terrain = chunk.version+'\x00'*4096+'\x00'*2048
 		# for every chunk up to the top of the selection box
 		for i in range(1+box.maxy/16):
 			# if the sub-chunk does not already exist
@@ -40,3 +46,9 @@ def perform(level, box, options):
 				chunk.add_data(terrain=terrain, subchunk=i)
 		# tell MCedit the chunk has changed
 		chunk.dirty = True
+	if emptyChunks:
+		print '========================================'
+		print 'The chunks above could not be processed because terrain has not been generated'
+		print '========================================'
+		print ''
+		raise Exception('Some chunks could not be generated. Check the console for locations')
