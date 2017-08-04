@@ -6,6 +6,7 @@ http://www.mcedit-unified.net/
 
 # Downloading
 To download a single filter click on the one you want and right click the "Raw" button and click "Save Link As..." then navigate to your filter directory
+
 ![Download Instructions](https://user-images.githubusercontent.com/11940194/28982508-1139eb0a-794e-11e7-80df-9e76ae8da07f.png)
 
 # Bugs and Contribution
