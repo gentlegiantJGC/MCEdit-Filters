@@ -36,10 +36,10 @@ def perform(level, box, options):
 			print 'issue loading chunk ('+str(cx)+', '+str(cz)+'). Go near it in game to genearate terrain'
 			emptyChunks = True
 			continue
-		# terrain tag in the format (version x1, blocks (air) x4096, block data x4096*0.5) 
-		terrain = chunk.version+'\x00'*4096+'\x00'*2048
+		# terrain tag in the format (version x1, blocks (air) x4096, block data x4096*0.5, sky light x4096*0.5, block light x4096*0.5) 
+		terrain = chunk.version+'\x00'*4096+'\x00'*2048+'\x00'*2048+'\x00'*2048
 		# for every chunk up to the top of the selection box
-		for i in range(1+box.maxy/16):
+		for i in range(max(1,1+(box.maxy-1)/16)):
 			# if the sub-chunk does not already exist
 			if i not in chunk.subchunks:
 				# create it with the terrain value created earlier
