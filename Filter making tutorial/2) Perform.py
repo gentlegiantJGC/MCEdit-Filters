@@ -24,11 +24,15 @@ def perform(level, box, options):
             for y in xrange(box.miny, box.maxy):  # nested loops can be slow
 				# the code that goes here will be repeated for every value of x, y and z in the selection area
 
-                if level.blockAt(x, y, z) == 14: # will check if the block id that is at (x, y, z) is equal to 14. If true it will run the lines below
-                    level.setBlockAt(x, y, z, 46) # This will set the block at (x, y, z) to 46
-				
-				level.blockDataAt(x, y, z) # takes the value of the block data at (x, y, z)
-				level.setBlockDataAt(x, y, z, 0) # Will set the block data at (x, y, z) to 0
+	# the three lines above are equal to the line below but the line below is more efficient than the above three
+	for x, y, z in box.positions:
+	
+	# the below lines would need to be nested in one of the above two so that x, y and z are defined
+	if level.blockAt(x, y, z) == 14: # will check if the block id that is at (x, y, z) is equal to 14. If true it will run the lines below
+		level.setBlockAt(x, y, z, 46) # This will set the block at (x, y, z) to 46
+	
+	level.blockDataAt(x, y, z) # takes the value of the block data at (x, y, z)
+	level.setBlockDataAt(x, y, z, 0) # Will set the block data at (x, y, z) to 0
 				
 				
 				
