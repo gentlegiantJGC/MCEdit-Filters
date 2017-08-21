@@ -34,7 +34,9 @@ def perform(level, box, options):
 	level.blockDataAt(x, y, z) # takes the value of the block data at (x, y, z)
 	level.setBlockDataAt(x, y, z, 0) # Will set the block data at (x, y, z) to 0
 				
-				
+	
+	# tell MCedit that the selection box has been modified
+	level.markDirtyBox(box)
 				
 				
     # The second is to extract the segment of interest into a contiguous array
