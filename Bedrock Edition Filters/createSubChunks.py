@@ -37,6 +37,8 @@ def perform(level, box, options):
 			print 'Issue getting flatworldlayers key. Might not be a flatworld'
 			print '========================================'
 			flatworldLayers = []
+	else:
+		flatworldLayers = []
 			
 	# iterating through every chunk in the box
 	for cx, cz in box.chunkPositions:
@@ -68,7 +70,6 @@ def generateChunk(level, generateBase, cx, cz, y, flatworldIDs=[]):
 		
 		else:
 			raise Exception()
-
 	# terrain tag in the format (version x1, blocks (air) x4096, block data x4096*0.5, sky light x4096*0.5, block light x4096*0.5)
 
 	# for every chunk up to the top of the selection box
