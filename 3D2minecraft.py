@@ -179,7 +179,7 @@ def perform(level, box, options):
 			print 'The folder must exist in the correct location but poly2vox cannot be found'
 			raise Exception ('poly2vox not found. Please read the readme. If the path printed in the console is poiting somewhere else let me know')
 		
-		if model[-4:] in ['.obj', '.asc', '.3ds', '.md2', '.md3', '.stl']:
+		if model[-4:].lower() in ['.obj', '.asc', '.3ds', '.md2', '.md3', '.stl']:
 			shutil.copyfile(kv6path+os.sep+'poly2vox.exe', oripath+os.sep+'poly2vox.exe')
 		else:
 			raise Exception ('file format selected not supported')
