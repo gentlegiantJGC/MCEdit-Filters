@@ -1,11 +1,9 @@
-# Before I start I should probably say that I have no idea why this works but that it does
 # All the credit for this one goes to Texelelf since he was the one who discovered it
 # Made by gentlegiantJGC
 # https://www.youtube.com/gentlegiantJGC
 
 
-from pymclevel import MCSchematic	# Both of these things need to be imported for it to work. To answer the question you probably have ... no idea
-import inspect
+from pymclevel import MCSchematic	# This needs to be imported for it to work.
 
 def perform(level, box, options):
 	
