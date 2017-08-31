@@ -16,7 +16,7 @@ from pymclevel import TAG_Compound, TAG_Int, TAG_Short, TAG_Byte, TAG_String, TA
 										# The data type must be correct. The correct type can be found on the chunk format wiki page
 										# http://minecraft.gamepedia.com/Chunk_format
 
-	chunk = level.getChunk(x/16.0, z/16.0)  # Chunk is not difined yet to this difines it
+	chunk = level.getChunk(x/16, z/16)  # Chunk is not difined yet to this difines it
 
 	chunk.TileEntities.append(cmd)		# You then need to append the compound tag to the world
 	chunk.dirty = True					# And tell MCedit that the chunk has been updated
