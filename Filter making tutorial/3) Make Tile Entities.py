@@ -6,7 +6,6 @@
 
 # only the TAG types used actually need importing
 from pymclevel import TAG_Compound, TAG_Int, TAG_Short, TAG_Byte, TAG_String, TAG_Float, TAG_Double, TAG_List, TileEntity
-import math
 
 	cmd = TAG_Compound()				# to create a tile entity you first of all need to make a TAG_compound
 	cmd["id"] = TAG_String("command_block")	# You can then specify values in the compound
@@ -17,7 +16,7 @@ import math
 										# The data type must be correct. The correct type can be found on the chunk format wiki page
 										# http://minecraft.gamepedia.com/Chunk_format
 
-	chunk = level.getChunk(math.floor(x/16.0), math.floor(z/16.0))  # Chunk is not difined yet to this difines it
+	chunk = level.getChunk(x/16.0, z/16.0)  # Chunk is not difined yet to this difines it
 
 	chunk.TileEntities.append(cmd)		# You then need to append the compound tag to the world
 	chunk.dirty = True					# And tell MCedit that the chunk has been updated
