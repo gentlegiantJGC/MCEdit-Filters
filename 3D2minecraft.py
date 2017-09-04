@@ -154,11 +154,11 @@ def perform(level, box, options):
 		
 
 	if options["Mode"] == "3d Model to Schematic":
-		file = mcplatform.askOpenFile(title="Select the 3D Model", schematics=False)
-		if file == None:
+		fileName = mcplatform.askOpenFile(title="Select the 3D Model", schematics=False)
+		if fileName == None:
 			raise Exception('No Model File Specified')
-		model = file.split(os.sep)[-1]
-		oripath = os.sep.join(file.split(os.sep)[0:-1])
+		model = fileName.split(os.sep)[-1]
+		oripath = os.sep.join(fileName.split(os.sep)[0:-1])
 		kv6path = directories.getFiltersDir()
 		
 		#checking all the required files exist and errors if they don't
@@ -232,10 +232,10 @@ def perform(level, box, options):
 		raise Exception('Conversion Finished')
 		
 	if options["Mode"] == "kv6 To Schematic":
-		file = mcplatform.askOpenFile(title="Select the kv6 file", schematics=False, suffixes=['kv6'])
-		if file == None:
+		fileName = mcplatform.askOpenFile(title="Select the kv6 file", schematics=False, suffixes=['kv6'])
+		if fileName == None:
 			raise Exception ('No File Selected')
-		kv6 = binascii.hexlify(open(file, "rb").read())
+		kv6 = binascii.hexlify(open(fileName, "rb").read())
 		kv62sch(level, kv6, colourpalletscan)
 		
 		raise Exception('Conversion Finished')
@@ -244,10 +244,10 @@ def perform(level, box, options):
 	elif options["Mode"] == "Get Colour Pallet":
 		from PIL import Image
 		colourpalletscan = []
-		file = mcplatform.askOpenFile(title="Select an image within the folder", schematics=False)
-		if file == None:
+		fileName = mcplatform.askOpenFile(title="Select an image within the folder", schematics=False)
+		if fileName == None:
 			raise Exception('No File Specified')
-		filepath = os.sep.join(file.split(os.sep)[0:-1])
+		filepath = os.sep.join(fileName.split(os.sep)[0:-1])
 		imgno = 0
 		imgcomp = Image.new('RGBA', (32, 16*len(Name2ID)))
 		for blockname in Name2ID:
