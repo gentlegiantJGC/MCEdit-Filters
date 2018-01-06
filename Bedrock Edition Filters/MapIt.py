@@ -14,7 +14,7 @@ displayName = "Map It!"
 inputs = (
 	("Thanks go to gentlegiantJGC (https://twitter.com/gentlegiantJGC) for an updated color palette!","label"),
 	("Item Frames are facing:",("Westwards (+X to -X)","Eastwards (-X to +X)","Northwards (+Z to -Z)","Southwards (-Z to +Z)")),
-	("If selection is too small for image size:",("Cancel Image Processing","Create Chests Filled with Maps")),
+	("If selection is too small for image size:",("Cancel Image Processing","Create Chests Filled with Maps","Scale to selection")),
 	("Item Frame backing block (replaces air blocks only):",alphaMaterials.Stone),
 	("Item Frames are invulnerable:",True),
 	("Transparency Mode:",("None","Use Default Color (#FF00FF)","User-Specified Color Below")),
@@ -254,10 +254,21 @@ def perform(level, box, options):
 		raise Exception("ERROR: No file provided!")
 		return
 	surface = pygame.image.load(image_path)
-	(height, width) = surface.get_size()
-	
+
+	# Adrian Brightmoore
+	# Modification to allow auto-resize to selection dimensions
 	sx, sy, sz = box.size
 	xsize, ysize, zsize = box.size * 128
+
+	if toosmall == "Scale to selection":
+		if (facing == "Eastwards (-X to +X)" or facing == "Westwards (+X to -X)"):
+			surface = pygame.transform.smoothscale(surface,(zsize,ysize))
+		elif (facing == "Northwards (+Z to -Z)" or facing == "Southwards (-Z to +Z)"):
+			surface = pygame.transform.smoothscale(surface,(xsize,ysize))
+	(height, width) = surface.get_size()
+
+	# End modification to allow auto-resize to selection dimensions
+
 	loopx = int(math.ceil(float(width)/128.0))
 	loopy = int(math.ceil(float(height)/128.0))
 	
