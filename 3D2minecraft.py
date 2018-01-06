@@ -14,9 +14,9 @@ the kv6 file that poly2vox spits out. That part of the script should work cross 
 
 SET UP
 First of all you need to put this script in your Filters directory (that part should be simple)
-Secondly you will need to make a folder called 'kv6' in the Filters directory and then download poly2vox from Ken Silverman's page
+Secondly you will need to download poly2vox from Ken Silverman's page
 http://advsys.net/ken/download.htm (about half way down CTRL+F POLY2VOX.ZIP if you are having trouble)
-Extract poly2vox.exe and put it in the kv6 folder that you just made
+Extract poly2vox.exe and put it in the filter directory along with this fitler
 
 That should be everything you should need before running the filter (bar of course a 3d model to convert)
 
@@ -154,62 +154,57 @@ def perform(level, box, options):
 		
 
 	if options["Mode"] == "3d Model to Schematic":
+		filterDir = directories.getFiltersDir()
+		kv6Path = '{}/poly2vox.exe'.format(filterDir)
+		
+		#checking all the required files exist and errors if they don't
+		if not os.path.isdir(filterDir):
+			print 'Filter Folder'
+			print filterDir
+			raise Exception ('Hmm I expected a filter directory here: {}.\nIt seems you do not have a directory in that location'.format(filterDir))
+		if not os.path.isfile(kv6Path):
+			print 'ploy2vox.exe Path'
+			print kv6Path
+			print 'The filters folder has been found but poly2vox cannot be found'
+			raise Exception ('poly2vox.exe should be found here: {}.'.format(kv6Path))
+		
 		fileName = mcplatform.askOpenFile(title="Select the 3D Model", schematics=False)
 		if fileName == None:
 			raise Exception('No Model File Specified')
 		model = fileName.split(os.sep)[-1]
-		oripath = os.sep.join(fileName.split(os.sep)[0:-1])
-		kv6path = directories.getFiltersDir()
-		
-		#checking all the required files exist and errors if they don't
-		if not os.path.isdir(os.sep.join(kv6path.split(os.sep)[0:-1])):
-			print 'FILE PATH'
-			print os.sep.join(kv6path.split(os.sep)[0:-1])
-			raise Exception ('Hmm it seems you do not have a filter directory in the location I expected')
-		if not os.path.isdir(kv6path):
-			print 'FILE PATH'
-			print kv6path
-			print 'You must make a folder within your main filter directory called kv6'
-			print 'In there you must put the poly2vox exe'
-			print 'If you believe you have a folder located there and the file path points to a different place send me a message with the path and I will see what I can do'
-			raise Exception ('Check the console. There is an error there')
-		if not os.path.isfile(str(kv6path+os.sep)+'poly2vox.exe'):
-			print 'FILE PATH'
-			print str(kv6path+os.sep)+'poly2vox.exe'
-			print 'The folder must exist in the correct location but poly2vox cannot be found'
-			raise Exception ('poly2vox not found. Please read the readme. If the path printed in the console is poiting somewhere else let me know')
+		meshDir = os.sep.join(fileName.split(os.sep)[0:-1])
 		
 		if model[-4:].lower() in ['.obj', '.asc', '.3ds', '.md2', '.md3', '.stl']:
-			shutil.copyfile(kv6path+os.sep+'poly2vox.exe', oripath+os.sep+'poly2vox.exe')
+			shutil.copyfile(kv6Path, '{}/poly2vox.exe'.format(meshDir))
 		else:
 			raise Exception ('file format selected not supported')
 		
 		if options["3d import limits"] == "Default":
-			argument = str(model)+' kv6.kv6'
+			argument = '{} kv6.kv6'.format(model)
 		elif options["3d import limits"] == "Max dimension":
-			argument = str(model)+' kv6.kv6 /v'+str(int(options["Limit Value"]))
+			argument = '{} kv6.kv6 /v{}'.format(model, int(options["Limit Value"]))
 		elif options["3d import limits"] == "Scale Factor":
-			argument = str(model)+' kv6.kv6 /s'+str(options["Limit Value"])
+			argument = '{} kv6.kv6 /s{}'.format(model, options["Limit Value"])
 		
-		defaultdir = os.getcwd()
-		os.chdir(oripath)
+		defaultDir = os.getcwd()
+		os.chdir(meshDir)
 		#being super cautious here because I have changed the working directory which is probably a dirty thing
 		#to do but textures won't get noticed if poly2vox is run from a different folder. It was either change the
 		#working directory to keep everything together or put everything in the main mcedit directory which would
 		#make a mess and be very difficult to clean up. If any step in the conversion process fails the working
 		#directory needs to be changed back to default otherwise it will mess up MCedit and a restart of the program
 		#would be required.
-		print 'poly2vox '+str(argument)
+		print 'poly2vox {}'.format(argument)
 		try:
-			os.system('poly2vox '+str(argument))
+			os.system('poly2vox {}'.format(argument))
 		except:
-			os.chdir(defaultdir)
+			os.chdir(defaultDir)
 			raise Exception ("Failure at Voxelization.")
 			
-		os.chdir(defaultdir)
+		os.chdir(defaultDir)
 			
 		try:
-			kv6 = binascii.hexlify(open(oripath+os.sep+'kv6.kv6', "rb").read())
+			kv6 = binascii.hexlify(open('{}/kv6.kv6'.format(meshDir), "rb").read())
 		except:
 			raise Exception ("Failure to read kv6 file.")
 		
@@ -219,15 +214,15 @@ def perform(level, box, options):
 			raise Exception ("Failure to convert to schematic.")
 			
 		try:
-			os.remove(oripath+os.sep+'poly2vox.exe')
+			os.remove('{}/poly2vox.exe'.format(meshDir))
 		except:
-			print 'Unable to remove poly2vox.exe in '+oripath+'. You will have to have a look why it could not be removed'
+			print 'Unable to remove poly2vox.exe in {}. You will have to have a look why it could not be removed'.format(meshDir)
 		
 		if not options["Leave kv6 (for debugging)"]:
 			try:
-				os.remove(oripath+os.sep+'kv6.kv6')
+				os.remove('{}/kv6.kv6'.format(meshDir))
 			except:
-				print 'Unable to remove kv6.kv6 in '+oripath+'. You will have to have a look why it could not be removed'
+				print 'Unable to remove kv6.kv6 in {}. You will have to have a look why it could not be removed'.format(meshDir)
 			
 		raise Exception('Conversion Finished')
 		
