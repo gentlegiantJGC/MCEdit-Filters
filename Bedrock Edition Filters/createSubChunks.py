@@ -23,7 +23,7 @@ inputs = (
 	)
 	
 def perform(level, box, options):
-	if level.gameVersion != 'PE':
+	if level.gamePlatform != 'PE':
 		raise Exception('Must be a PE/Win10... world')
 	emptyChunks = False
 	y = (box.maxy-1)/16
