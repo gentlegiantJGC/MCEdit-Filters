@@ -174,9 +174,11 @@ def CreateItemFramePE(x, y, z, mapid):
 
 def perform(level, box, options):
 	try:
-		level.gamePlatform
+		gamePlatform = level.gamePlatform
 	except:
-		raise Exception('This filter requires level.gamePlatform. You will need a version of MCedit that has this')
+		gamePlatform = 'Java'
+	if gamePlatform not in ['Java','PE']:
+		raise Exception('gamePlatform "{}" is not supported'.format(gamePlatform))
 	global idcount
 	nearest = options["Use Nearest-Color Transparency (recommended for lossy image formats):"]
 	tmode = options["Transparency Mode:"]
@@ -202,7 +204,7 @@ def perform(level, box, options):
 		return
 	toosmall = options["If selection is too small for image size:"]
 
-	if level.gamePlatform == 'Java':
+	if gamePlatform == 'Java':
 		if level.dimNo:
 			datafolder = level.parentWorld.worldFolder.getFolderPath("data")	
 		else:
@@ -227,7 +229,7 @@ def perform(level, box, options):
 			idcountfile = TAG_Compound()
 			idcountfile["map"] = TAG_Short(0)
 			
-	elif level.gamePlatform == 'PE':
+	elif gamePlatform == 'PE':
 		try:
 			with level.worldFile.world_db() as db:
 				rop = level.worldFile.readOptions
@@ -272,13 +274,13 @@ def perform(level, box, options):
 	loopx = int(math.ceil(float(width)/128.0))
 	loopy = int(math.ceil(float(height)/128.0))
 	
-	if level.gamePlatform == 'Java':
+	if gamePlatform == 'Java':
 		if (loopx*loopy)+idcount > 32767:
 			raise Exception("\nERROR! The image size is too large or there are not enough maps left for this world.\n"
 			"Only 32,767 map files are allowed per world, and there are",idcount,"maps in this world.\n"
 			"The image specified requires",(loopx*loopy),"maps.\n")
 			return
-	# elif level.gamePlatform == 'PE':
+	# elif gamePlatform == 'PE':
 		# could do similar code to above but the limit is 2^63 rather than 2^15 so it will never be reached ever
 		
 
@@ -370,17 +372,17 @@ def perform(level, box, options):
 						break
 				CreateNewMapFilePE(level, idcount, converted)
 
-	if level.gamePlatform == 'Java':
+	if gamePlatform == 'Java':
 		level.showProgress("Processing image pieces:", processImageJava(image, loopx, loopy, width, height, cache, transparent, nearest, image_path, progresscount, progressmax))
-	elif level.gamePlatform == 'PE':
+	elif gamePlatform == 'PE':
 		level.showProgress("Processing image pieces:", processImagePE(image, loopx, loopy, width, height, image_path, progresscount, progressmax))
 	print idcount
 	endid = idcount
 	print endid
-	if level.gamePlatform == 'Java':
+	if gamePlatform == 'Java':
 		idcountfile["map"] = TAG_Short(idcount)
 		idcountfile.save(idcountpath, compressed=False)
-	elif level.gamePlatform == 'PE':
+	elif gamePlatform == 'PE':
 		idcountfile["map"] = TAG_Long(idcount)
 		with level.worldFile.world_db() as db:
 			wop = level.worldFile.writeOptions
@@ -389,7 +391,7 @@ def perform(level, box, options):
 	print "Finished processing image "+image_path+". Creating "+chestorframe+"..."
 
 	if chestorframe == "item frames":
-		if level.gamePlatform == 'Java':
+		if gamePlatform == 'Java':
 			if facing == "Northwards (+Z to -Z)" or facing == "Southwards (-Z to +Z)":
 				if facing == "Northwards (+Z to -Z)":
 					dir = 0
@@ -435,7 +437,7 @@ def perform(level, box, options):
 						chunk.dirty = True
 						startid += 1
 						
-		elif level.gamePlatform == 'PE':
+		elif gamePlatform == 'PE':
 			if facing == "Northwards (+Z to -Z)" or facing == "Southwards (-Z to +Z)":
 				if facing == "Northwards (+Z to -Z)":
 					dir = 3
@@ -482,7 +484,7 @@ def perform(level, box, options):
 						startid += 1
 
 	else:
-		if level.gamePlatform == 'Java':
+		if gamePlatform == 'Java':
 			breakout = False
 			entsToAdd = []
 			for y in xrange(box.miny,box.maxy):
@@ -518,7 +520,7 @@ def perform(level, box, options):
 						break
 				if breakout:
 					break
-		elif level.gamePlatform == 'PE':
+		elif gamePlatform == 'PE':
 			breakout = False
 			entsToAdd = []
 			for y in xrange(box.miny,box.maxy):
