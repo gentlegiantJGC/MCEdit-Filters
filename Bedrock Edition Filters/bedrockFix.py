@@ -23,6 +23,17 @@ inputs = (
 	("Spawner Entity", (False)),
 )
 	
+'''
+TODO list
+option to make shulkers point either upwards or into an air gap or leave as is (will point down if no te to start with)
+detect if bed is valid
+fix pistons
+do these two need tile entities?
+	end portal
+	end gateway
+'''
+	
+	
 def perform(level, box, options):
 	if level.gamePlatform != 'PE':
 		raise Exception('Must be a PE/Win10... world')
@@ -37,7 +48,9 @@ def perform(level, box, options):
 		52 : "MobSpawner",
 		54 : "Chest",
 		61 : "Furnace",
+		62 : "Furnace",
 		63 : "Sign",
+		68 : "Sign",
 		84 : "Jukebox",
 		116 : "EnchantTable",
 		117 : "BrewingStand",
@@ -50,13 +63,19 @@ def perform(level, box, options):
 		144 : "Skull",
 		146 : "Chest",
 		149 : "Comparator",
+		150 : "Comparator",
 		151 : "DaylightDetector",
 		154 : "Hopper",
 		176 : "Banner",
 		177 : "Banner",
 		178 : "DaylightDetector",
 		188 : "CommandBlock",
-		189 : "CommandBlock"
+		189 : "CommandBlock",
+		199 : "ItemFrame",
+		205 : "ShulkerBox",
+		218 : "ShulkerBox",
+		247 : "NetherReactor",
+		252 : "StructureBlock"
 	}
 
 
