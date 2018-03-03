@@ -52,7 +52,7 @@ def perform(level, box, options):
 	except Exception as e:
 		print 'error checking or updating filter : "{}"'.format(e)
 	if breakForUpdate:
-		raise Exception('Updated Filter To Version {}'.format(newVersion[1:]))
+		raise Exception('Updated Filter To Version {}\nRestart Filter Tool To See Changes'.format(newVersion[1:]))
 
 	logFile = ''
 	def logFileFun(logFile, msg):
