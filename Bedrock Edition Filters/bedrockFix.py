@@ -1,3 +1,4 @@
+#V1.1
 #Written by gentlegiantJGC
 #http://youtube.com/gentlegiantJGC
 #https://twitter.com/gentlegiantJGC
@@ -5,17 +6,18 @@
 '''
 Copyright Notice
 I hereby give the user full rights to use this program as provided with the condition that it is only used for non-commercial projects. If the user would like to use this program for commercial projects an alternative can be provided without this limitation for a fee. If interested, please contact me via direct message on twitter (link above) or by other means.
-This program can be modified however this copyright notice and the creator information (lines 1-9) must remain unchanged and unmoved. This program must also not be redistributed or rehosted in any way.
+This program can be modified however this copyright notice and the creator information (lines 2-10) must remain unchanged and unmoved. This program must also not be redistributed or rehosted in any way.
 '''
 
 from pymclevel import TAG_Int, TAG_String, TAG_Compound
 import numpy as np
-import random
+import random, os, sys, directories
 
 displayName = "Bedrock Fix"
 
 inputs = (
 	("Log Errors", (True)),
+	("Log File", ("file-save", ["*.txt"])),
 	("Fix Errors", (True)),
 	("Chest Contents", (False)),
 	("Chest Loot Table", ("string", "value=loot_tables/chests/woodland_mansion.json")),
@@ -25,6 +27,7 @@ inputs = (
 	
 '''
 TODO list
+log to file rather than console
 option to make shulkers point either upwards or into an air gap or leave as is (will point down if no te to start with)
 detect if bed is valid
 fix pistons
@@ -35,6 +38,29 @@ do these two need tile entities?
 	
 	
 def perform(level, box, options):
+	filterVersion = '#V1.1'
+	breakForUpdate = False
+	try:
+		newFilter = urllib2.urlopen('https://raw.githubusercontent.com/gentlegiantJGC/MCEdit-Filters/master/Bedrock%20Edition%20Filters/bedrockFix.py').read()
+		newVersion = newFilter.replace('\r','').split('\n')[0]
+		if filterVersion != newVersion
+			f = open('{}/bedrockFix.py'.format(directories.getFiltersDir()),'w')
+			f.write(newFilter)
+			f.close()
+		breakForUpdate = True
+
+	except Exception as e:
+		print 'error checking or updating filter : "{}"'.format(e)
+	if breakForUpdate:
+		raise Exception('Updated Filter To Version {}'.format(newVersion[1:]))
+
+	logFile = ''
+	def logFileFun(logFile, msg):
+		print msg
+		if logFile == '':
+			return msg
+		else:
+			return '{}\n{}'.format(logFile,msg)
 	if level.gamePlatform != 'PE':
 		raise Exception('Must be a PE/Win10... world')
 		
@@ -109,21 +135,40 @@ def perform(level, box, options):
 				if options["Log Errors"]:
 					if 'id' in te:
 						if te['id'].value != blocksSupported[block]:
-							print 'Block at {} is type "{}" but set as type "{}"'.format((x,y,z), blocksSupported[block], te['id'].value)
+							logFile = logFileFun(logFile, 'Block at {} is type "{}" but set as type "{}"'.format((x,y,z), blocksSupported[block], te['id'].value))
 					else:
 						if createTileEntity:
-							print 'Block at {} is type "{}" but has no tile entity'.format((x,y,z), blocksSupported[block])
+							logFile = logFileFun(logFile, 'Block at {} is type "{}" but has no tile entity'.format((x,y,z), blocksSupported[block]))
 						else:
-							print 'Block at {} is type "{}" but has no "id" key'.format((x,y,z), blocksSupported[block])
+							logFile = logFileFun(logFile, 'Block at {} is type "{}" but has no "id" key'.format((x,y,z), blocksSupported[block]))
+					if blocksSupported[block] == 'Bed':
+						if level.blockDataAt(x,y,z) == 0 and level.blockAt(x,y,z+1) == 26 and level.blockDataAt(x,y,z+1) == 8:
+							pass
+						elif level.blockDataAt(x,y,z) == 8 and level.blockAt(x,y,z-1) == 26 and level.blockDataAt(x,y,z-1) == 0:
+							pass
+						elif level.blockDataAt(x,y,z) == 10 and level.blockAt(x,y,z+1) == 26 and level.blockDataAt(x,y,z+1) == 2:
+							pass
+						elif level.blockDataAt(x,y,z) == 2 and level.blockAt(x,y,z-1) == 26 and level.blockDataAt(x,y,z-1) == 10:
+							pass
+						elif level.blockDataAt(x,y,z) == 3 and level.blockAt(x+1,y,z) == 26 and level.blockDataAt(x+1,y,z) == 11:
+							pass
+						elif level.blockDataAt(x,y,z) == 11 and level.blockAt(x-1,y,z) == 26 and level.blockDataAt(x-1,y,z) == 3:
+							pass
+						elif level.blockDataAt(x,y,z) == 9 and level.blockAt(x+1,y,z) == 26 and level.blockDataAt(x+1,y,z) == 1:
+							pass
+						elif level.blockDataAt(x,y,z) == 1 and level.blockAt(x-1,y,z) == 26 and level.blockDataAt(x-1,y,z) == 9:
+							pass
+						else:
+							logFile = logFileFun(logFile, 'Block at {} is an invalid bed'.format((x,y,z)))
 					
 				if options["Fix Errors"]:
 					te['id'] = TAG_String(blocksSupported[block])
 					
-					if block == 52:
+					if blocksSupported[block] == "MobSpawner":
 						if options["Spawner Entity"]:
 							if 'EntityId' not in te or ('EntityId' in te and te['EntityId'].value == 1):
 									te['EntityId'] = TAG_Int(random.choice([32,33,34,35]))
-					elif block in [54,146]:
+					elif blocksSupported[block] == 'Chest':
 						if 'Items' in te and len(te['Items']) > 0:
 							pass
 						elif 'LootTable' not in te and options["Chest Contents"] and random.choice(chestProb):
@@ -133,3 +178,8 @@ def perform(level, box, options):
 						chunk.TileEntities.append(te)
 		if options["Fix Errors"]:
 			chunk.chunkChanged()
+	if options["Log Errors"] and options["Log File"] is not None:
+		f = open(options["Log File"],'w')
+		f.write(logFile)
+		f.close()
+		os.startfile(options["Log File"])
