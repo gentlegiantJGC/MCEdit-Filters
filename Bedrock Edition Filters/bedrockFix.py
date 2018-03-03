@@ -11,7 +11,7 @@ This program can be modified however this copyright notice and the creator infor
 
 from pymclevel import TAG_Int, TAG_String, TAG_Compound
 import numpy as np
-import random, os, sys, directories
+import random, os, sys, directories, urllib2
 
 displayName = "Bedrock Fix"
 
@@ -43,11 +43,11 @@ def perform(level, box, options):
 	try:
 		newFilter = urllib2.urlopen('https://raw.githubusercontent.com/gentlegiantJGC/MCEdit-Filters/master/Bedrock%20Edition%20Filters/bedrockFix.py').read()
 		newVersion = newFilter.replace('\r','').split('\n')[0]
-		if filterVersion != newVersion
+		if filterVersion != newVersion:
 			f = open('{}/bedrockFix.py'.format(directories.getFiltersDir()),'w')
 			f.write(newFilter)
 			f.close()
-		breakForUpdate = True
+			breakForUpdate = True
 
 	except Exception as e:
 		print 'error checking or updating filter : "{}"'.format(e)
