@@ -88,9 +88,8 @@ def generateChunk(level, generateBase, cx, cz, y, flatworldIDs=[]):
 			if len(blockIDsChunk) != 16:
 				raise Exception('blockIDsChunk not the right size')
 			blocks = ''.join([chr(block) for block in blockIDsChunk])
-			terrain = chunk.version
-			for _ in range(256):
-				terrain += blocks
+			terrain = '\x00'
+			terrain += blocks*256
 			terrain += '\x00'*2048+'\x00'*2048+'\x00'*2048
 			# create it with the terrain value created earlier
 			chunk.add_data(terrain=terrain, subchunk=i)
