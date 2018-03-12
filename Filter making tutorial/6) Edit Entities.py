@@ -19,3 +19,4 @@ def perform(level, box, options):
 				del e["TAG"]					# This will delete the tag called TAG in e
 				e["id"] = TAG_String("zombie")	# This will turn the entity into a zombie
 				e["Pos"][1] = TAG_Double(y)		# This will change the entity's y coordinate
+				chunk.dirty = True	# And tell MCedit that the chunk has been updated
