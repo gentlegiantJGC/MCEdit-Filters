@@ -3,15 +3,15 @@
 #http://youtube.com/gentlegiantJGC
 #https://twitter.com/gentlegiantJGC
 
-'''
+lic = '''
 Copyright Notice
 I hereby give the user full rights to use this program as provided with the condition that it is only used for non-commercial projects. If the user would like to use this program for commercial projects an alternative can be provided without this limitation for a fee. If interested, please contact me via direct message on twitter (link above) or by other means.
 This program can be modified however this copyright notice and the creator information (lines 2-10) must remain unchanged and unmoved. This program must also not be redistributed or rehosted in any way.
 '''
 
-from pymclevel import TAG_Int, TAG_String, TAG_Compound
+from pymclevel import TAG_Int, TAG_String, TAG_Compound, TAG_Byte
 import numpy as np
-import random, os, sys, directories, urllib2
+import random, os, sys, directories, urllib2, json, albow
 
 displayName = "Bedrock Fix"
 
@@ -23,19 +23,18 @@ inputs = (
 	("Chest Loot Table", ("string", "value=loot_tables/chests/woodland_mansion.json")),
 	("Percentage of chests to populate", (100, 0, 100)),
 	("Spawner Entity", (False)),
+	("Fix undefined Shulker box rotation", (True)),
 )
 	
 '''
 TODO list
-log to file rather than console
 option to make shulkers point either upwards or into an air gap or leave as is (will point down if no te to start with)
-detect if bed is valid
 fix pistons
 do these two need tile entities?
 	end portal
 	end gateway
 '''
-	
+
 	
 def perform(level, box, options):
 	filterVersion = '#V1.1'
@@ -63,6 +62,37 @@ def perform(level, box, options):
 			return '{}\n{}'.format(logFile,msg)
 	if level.gamePlatform != 'PE':
 		raise Exception('Must be a PE/Win10... world')
+	
+	try:
+		f = open('{}/ggjgc.json'.format(directories.getFiltersDir()),'r')
+		licenses = json.load(f)
+		f.close()
+	except:
+		licenses = {}
+	if type(licenses) != dict:
+		licenses = {}
+	if 'bedrockFix' not in licenses:
+		licenses['bedrockFix'] = False
+	if not licenses['bedrockFix']:
+		answer = None
+		print lic
+		answer = albow.ask(
+			'Please agree to the user agreement to use this filter (written at the start of the filter and printed in the console)',
+			[
+				'I Accept',
+				'Cancel'
+			],
+			default=0,
+			cancel=1
+		)
+		if answer == 'I Accept':
+			licenses['bedrockFix'] = True
+		else:
+			raise Exception('You need to agree to the user agreement to use this filter')
+		
+		f = open('{}/ggjgc.json'.format(directories.getFiltersDir()),'w')
+		f.write(json.dumps(licenses))
+		f.close()
 		
 	chestProb = [True]*options["Percentage of chests to populate"] + [False] * (100-options["Percentage of chests to populate"])
 	blocksSupported = {
@@ -103,6 +133,8 @@ def perform(level, box, options):
 		247 : "NetherReactor",
 		252 : "StructureBlock"
 	}
+	
+	transparrent = [244,199,177,176,175,148,147,143,142,141,132,131,126,115,106,105,104,83,77,76,75,72,70,69,68,66,63,59,55,51,50,40,39,38,37,32,31,30,28,27,11,10,9,8,6,0]
 
 
 	for cx, cz in box.chunkPositions:
@@ -164,16 +196,34 @@ def perform(level, box, options):
 				if options["Fix Errors"]:
 					te['id'] = TAG_String(blocksSupported[block])
 					
-					if blocksSupported[block] == "MobSpawner":
-						if options["Spawner Entity"]:
-							if 'EntityId' not in te or ('EntityId' in te and te['EntityId'].value == 1):
-									te['EntityId'] = TAG_Int(random.choice([32,33,34,35]))
+					if blocksSupported[block] == "MobSpawner" and options["Spawner Entity"]:
+						if 'EntityId' not in te or ('EntityId' in te and te['EntityId'].value == 1):
+								te['EntityId'] = TAG_Int(random.choice([32,33,34,35]))
 					elif blocksSupported[block] == 'Chest':
 						if 'Items' in te and len(te['Items']) > 0:
 							pass
 						elif 'LootTable' not in te and options["Chest Contents"] and random.choice(chestProb):
 							te['LootTable'] = TAG_String(options["Chest Loot Table"])
-					
+					elif blocksSupported[block] == 'ShulkerBox' and options["Fix undefined Shulker box rotation"]:
+						if "facing" not in te:
+							if level.blockAt(x,y+1,z) in transparrent:
+								te["facing"] = TAG_Byte(1)
+							else:
+								directions = []
+								if level.blockAt(x,y-1,z) in transparrent:
+									directions.append(0)
+								if level.blockAt(x-1,y,z) in transparrent:
+									directions.append(4)
+								if level.blockAt(x+1,y,z) in transparrent:
+									directions.append(5)
+								if level.blockAt(x,y,z-1) in transparrent:
+									directions.append(2)
+								if level.blockAt(x,y,z+1) in transparrent:
+									directions.append(3)
+								if directions == []:
+									te["facing"] = TAG_Byte(1)
+								else:
+									te["facing"] = TAG_Byte(random.choice(directions))
 					if createTileEntity:
 						chunk.TileEntities.append(te)
 		if options["Fix Errors"]:
