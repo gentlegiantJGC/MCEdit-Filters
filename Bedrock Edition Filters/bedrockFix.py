@@ -1,4 +1,4 @@
-#V1.1
+#V1.2
 #Written by gentlegiantJGC
 #http://youtube.com/gentlegiantJGC
 #https://twitter.com/gentlegiantJGC
@@ -37,7 +37,7 @@ do these two need tile entities?
 
 	
 def perform(level, box, options):
-	filterVersion = '#V1.1'
+	filterVersion = '#V1.2'
 	breakForUpdate = False
 	try:
 		newFilter = urllib2.urlopen('https://raw.githubusercontent.com/gentlegiantJGC/MCEdit-Filters/master/Bedrock%20Edition%20Filters/bedrockFix.py').read()
